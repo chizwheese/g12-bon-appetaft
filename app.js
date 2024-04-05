@@ -436,7 +436,7 @@ server.post('/edit-owner-profile', upload.single('pfpUrl'),  async (req, res) =>
 
 /* connect to database */
 
-mongoose.connect('mongodb://localhost:27017/logininfo');
+mongoose.connect('mongodb+srv://chizwheese:maLaka$naPW!@cluster0.d6pztxh.mongodb.net/logininfo');
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Error connecting to database:'));
