@@ -142,8 +142,7 @@ header button {
         margin: 0 5px;
     }
 
-    overflow-x: scroll;
-    overflow-y: visible;
+    flex-wrap: wrap;
 }
 
 .resto1, .resto2, .resto3, .resto4, .resto5  {
