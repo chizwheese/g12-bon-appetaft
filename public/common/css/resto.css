@@ -154,6 +154,7 @@ header button {
     transform: translate(2%, 2%);
     transition: transform 0.2s;
     text-decoration: none;
+    margin-top: 5px;
 
     &:hover {
         transform: translate(0, 0);
