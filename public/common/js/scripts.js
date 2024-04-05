@@ -772,11 +772,61 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-/* delete account */
+/* delete user account */
 
 document.addEventListener("DOMContentLoaded", function () {
     var modal = document.getElementById("deleteAccountModal");
     var editAccModal = document.querySelector(".edit-preview");
+
+    var deleteAccountButton = document.querySelector(".btn.submit.delete-user");
+    var confirmDeleteButton = document.getElementById("confirmDeleteAccount");
+
+    var cancelDeleteButton = document.getElementById("cancelDeleteAccount");
+
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    deleteAccountButton.onclick = function () {
+        modal.style.display = "block";
+        editAccModal.style.display = "none";
+    }
+
+    cancelDeleteButton.onclick = function () {
+        modal.style.display = "none";
+    }
+
+    confirmDeleteButton.onclick = function () {
+        fetch('/delete-account', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.href = "/"; 
+            } else {
+                console.error('Error deleting account:', response.statusText);
+                alert('An error occurred while deleting the account. Please try again later.');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting account:', error);
+            alert('An error occurred while deleting the account. Please try again later.');
+        });
+    }
+});
+
+
+/* delete owner account */
+
+document.addEventListener("DOMContentLoaded", function () {
+    var modal = document.getElementById("deleteOwnerModal");
+    var editAccModal = document.getElementById("ownerEditModal");
 
     var deleteAccountButton = document.querySelector(".btn.submit.delete-account");
 
@@ -798,17 +848,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     var confirmDeleteButton = document.getElementById("confirmDeleteAccount");
-    
+
     confirmDeleteButton.onclick = function () {
-        var userId = ""; 
-        var username = ""; 
-    
-        fetch('/delete-account', {
+        fetch('/delete-owner', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ userId: userId, username: username })
+            // Pass appropriate user data for deletion
+            body: JSON.stringify({ /* userId: userId, */ username: 'current_username' })
         })
         .then(response => {
             if (response.ok) {
@@ -823,5 +871,5 @@ document.addEventListener("DOMContentLoaded", function () {
             alert('An error occurred while deleting the account. Please try again later.');
         });
     }
-    
 });
+
