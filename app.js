@@ -1,5 +1,5 @@
 // npm init -y
-// npm install express express-handlebars body-parser mongoose passport passport-local connect-flash moment bcrypt
+// npm i install express express-handlebars body-parser mongoose passport passport-local connect-flash moment bcrypt
 
 const express = require('express');
 const server = express();
@@ -109,6 +109,22 @@ server.get('/', async function(req, res) {
         }
 
         res.render('homepage', data);
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+server.get('/about', async function(req, res) {
+    try {
+        const loggedInUser = req.user;
+        const guests = await loginGuest.find({});
+        let data = {
+            layout          : 'index',
+            title           : 'BON APPÉTaft - About Us',
+        };
+
+        res.render('about', data);
     } catch (err) {
         console.error('Error:', err);
         res.status(500).send('Internal Server Error');
@@ -368,6 +384,32 @@ server.post('/delete-account', async (req, res) => {
     }
 });
 
+server.post('/delete-owner', async (req, res) => {
+    try {
+        if (!req.user || !req.user.username) {
+            return res.status(401).send('Unauthorized');
+        }
+
+        const usernameToDelete = req.user.username;
+
+        const userToDelete = await loginOwner.findOne({ username: usernameToDelete });
+
+        if (!userToDelete) {
+            return res.status(404).send('User not found');
+        }
+
+        await reply.deleteMany({ username: usernameToDelete });
+
+        await loginOwner.findOneAndDelete({ username: usernameToDelete });
+
+        res.status(200).send('User account and associated reviews deleted successfully');
+    } catch (error) {
+        console.error('Error deleting user account:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
 server.post('/edit-owner-profile', upload.single('pfpUrl'),  async (req, res) => {
     try {
         const ownerId = req.body.ownerId;
@@ -394,7 +436,7 @@ server.post('/edit-owner-profile', upload.single('pfpUrl'),  async (req, res) =>
 
 /* connect to database */
 
-mongoose.connect('mongodb+srv://chizwheese:maLaka$naPW!@cluster0.d6pztxh.mongodb.net/logininfo');
+mongoose.connect('mongodb://localhost:27017/logininfo');
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Error connecting to database:'));
