@@ -1,5 +1,5 @@
 // npm init -y
-// npm install express express-handlebars body-parser mongoose passport passport-local connect-flash moment bcrypt simple-git
+// npm install express express-handlebars body-parser mongoose passport passport-local connect-flash moment bcrypt
 
 const express = require('express');
 const server = express();
@@ -23,8 +23,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-const simpleGit = require('simple-git');
-const git = simpleGit();
 
 const session = require('express-session');
 const passport = require('passport');
@@ -308,11 +306,6 @@ server.post('/edit-profile', upload.single('pfpUrl'), async (req, res) => {
             return res.status(404).send('User not found');
         }
 
-        if (req.file) {
-            await git.add(`public/uploads/${req.file.filename}`);
-            await git.commit('Add user profile picture');
-        }
-
         res.status(200).json({ message: 'Profile successfully updated', user: updatedUser });
     } catch (error) {
         console.error('Error updating profile:', error);
@@ -389,11 +382,6 @@ server.post('/edit-owner-profile', upload.single('pfpUrl'),  async (req, res) =>
 
         if (!updatedOwner) {
             return res.status(404).send('Owner not found');
-        }
-
-        if (req.file) {
-            await git.add(`public/uploads/${req.file.filename}`);
-            await git.commit('Add user profile picture');
         }
 
         res.status(200).json({ message: 'Owner profile successfully updated', owner: updatedOwner });
@@ -496,11 +484,6 @@ server.post('/submit-review', upload.single('reviewImg'), async (req, res) => {
             unhelpfulStatus: req.body.unhelpfulStatus
         });
 
-        if (req.file) {
-            await git.add(`public/uploads/${req.file.filename}`);
-            await git.commit('Add review picture');
-        }
-
         await newReview.save();
         res.send('Review successfully submitted');
     } catch (error) {
@@ -552,11 +535,6 @@ server.post('/create-user', upload.single('pfpUrl'), async (req, res) => {
             password        : hashedPassword,
             dob             : req.body.dob
         });
-
-        if (req.file) {
-            await git.add(`public/uploads/${req.file.filename}`);
-            await git.commit('Add user profile picture');
-        }
 
         await userInstance.save();
         res.send('User created');
@@ -611,11 +589,6 @@ server.post('/create-owner', upload.single('pfpUrl'), async (req, res) => {
             openingTime     : req.body.openingTime,
             closingTime     : req.body.closingTime
         });
-
-        if (req.file) {
-            await git.add(`public/uploads/${req.file.filename}`);
-            await git.commit('Add owner profile picture');
-        }
 
         await ownerInstance.save();
         res.send('Owner created');
