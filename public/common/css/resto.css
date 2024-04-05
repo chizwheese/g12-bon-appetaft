@@ -146,6 +146,7 @@ header button {
 }
 
 .resto1, .resto2, .resto3, .resto4, .resto5  {
+    display: block;
     padding: 10px;
     width: 220px;
     min-height: auto;
