@@ -141,6 +141,8 @@ header button {
     a {
         margin: 0 5px;
     }
+
+    overflow-x: scroll;
 }
 
 .resto1, .resto2, .resto3, .resto4, .resto5  {
