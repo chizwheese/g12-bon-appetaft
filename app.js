@@ -1,5 +1,5 @@
 // npm init -y
-// npm i install express express-handlebars body-parser mongoose passport passport-local connect-flash moment bcrypt
+// npm install express express-handlebars body-parser mongoose passport passport-local connect-flash moment bcrypt simple-git
 
 const express = require('express');
 const server = express();
@@ -23,6 +23,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+const simpleGit = require('simple-git');
+const git = simpleGit();
 
 const session = require('express-session');
 const passport = require('passport');
@@ -109,22 +111,6 @@ server.get('/', async function(req, res) {
         }
 
         res.render('homepage', data);
-    } catch (err) {
-        console.error('Error:', err);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-server.get('/about', async function(req, res) {
-    try {
-        const loggedInUser = req.user;
-        const guests = await loginGuest.find({});
-        let data = {
-            layout          : 'index',
-            title           : 'BON APPÉTaft - About Us',
-        };
-
-        res.render('about', data);
     } catch (err) {
         console.error('Error:', err);
         res.status(500).send('Internal Server Error');
@@ -322,6 +308,11 @@ server.post('/edit-profile', upload.single('pfpUrl'), async (req, res) => {
             return res.status(404).send('User not found');
         }
 
+        if (req.file) {
+            await git.add(`public/uploads/${req.file.filename}`);
+            await git.commit('Add user profile picture');
+        }
+
         res.status(200).json({ message: 'Profile successfully updated', user: updatedUser });
     } catch (error) {
         console.error('Error updating profile:', error);
@@ -384,32 +375,6 @@ server.post('/delete-account', async (req, res) => {
     }
 });
 
-server.post('/delete-owner', async (req, res) => {
-    try {
-        if (!req.user || !req.user.username) {
-            return res.status(401).send('Unauthorized');
-        }
-
-        const usernameToDelete = req.user.username;
-
-        const userToDelete = await loginOwner.findOne({ username: usernameToDelete });
-
-        if (!userToDelete) {
-            return res.status(404).send('User not found');
-        }
-
-        await reply.deleteMany({ username: usernameToDelete });
-
-        await loginOwner.findOneAndDelete({ username: usernameToDelete });
-
-        res.status(200).send('User account and associated reviews deleted successfully');
-    } catch (error) {
-        console.error('Error deleting user account:', error);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-
 server.post('/edit-owner-profile', upload.single('pfpUrl'),  async (req, res) => {
     try {
         const ownerId = req.body.ownerId;
@@ -424,6 +389,11 @@ server.post('/edit-owner-profile', upload.single('pfpUrl'),  async (req, res) =>
 
         if (!updatedOwner) {
             return res.status(404).send('Owner not found');
+        }
+
+        if (req.file) {
+            await git.add(`public/uploads/${req.file.filename}`);
+            await git.commit('Add user profile picture');
         }
 
         res.status(200).json({ message: 'Owner profile successfully updated', owner: updatedOwner });
@@ -526,6 +496,11 @@ server.post('/submit-review', upload.single('reviewImg'), async (req, res) => {
             unhelpfulStatus: req.body.unhelpfulStatus
         });
 
+        if (req.file) {
+            await git.add(`public/uploads/${req.file.filename}`);
+            await git.commit('Add review picture');
+        }
+
         await newReview.save();
         res.send('Review successfully submitted');
     } catch (error) {
@@ -577,6 +552,11 @@ server.post('/create-user', upload.single('pfpUrl'), async (req, res) => {
             password        : hashedPassword,
             dob             : req.body.dob
         });
+
+        if (req.file) {
+            await git.add(`public/uploads/${req.file.filename}`);
+            await git.commit('Add user profile picture');
+        }
 
         await userInstance.save();
         res.send('User created');
@@ -631,6 +611,11 @@ server.post('/create-owner', upload.single('pfpUrl'), async (req, res) => {
             openingTime     : req.body.openingTime,
             closingTime     : req.body.closingTime
         });
+
+        if (req.file) {
+            await git.add(`public/uploads/${req.file.filename}`);
+            await git.commit('Add owner profile picture');
+        }
 
         await ownerInstance.save();
         res.send('Owner created');
